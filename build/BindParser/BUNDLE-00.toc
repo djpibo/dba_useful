@@ -1,3 +1,0 @@
-([('BindParser',
-   '/Users/oliveyoung/PycharmProjects/BindParser/dist/BindParser',
-   'EXECUTABLE')],)
