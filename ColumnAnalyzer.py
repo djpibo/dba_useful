@@ -1,92 +1,1270 @@
-import tkinter as tk
-from tkinter import ttk
+import re
+
+# 예시 입력
+input_text = """
+이름                    널?       유형          
+--------------------- -------- ------------
+OPER_DT               NOT NULL VARCHAR2(8) 
+ORIGIN_BIZPL_CD       NOT NULL VARCHAR2(5) 
+POS_NO                NOT NULL VARCHAR2(4) 
+RECEIPT_NO            NOT NULL VARCHAR2(33)
+SEQ_NO                NOT NULL VARCHAR2(3) 
+BIZPL_CD                       VARCHAR2(5) 
+TENDER_CD                      VARCHAR2(2) 
+TENDER_DETAIL_CD               VARCHAR2(2) 
+TENDER_MD_CD                   VARCHAR2(2) 
+TENDER_SP                      VARCHAR2(1) 
+TENDER_QTY                     NUMBER(3)   
+TENDER_AMT                     NUMBER(17,2)
+CHANGE                         NUMBER(11,2)
+NOR_CANCEL_SP                  VARCHAR2(1) 
+CARD_NO                        VARCHAR2(64)
+CARD_APPROV_DT                 VARCHAR2(8) 
+CARD_DEAL_ACK_NO               VARCHAR2(20)
+ALLOT_MM_CNT                   NUMBER(3)   
+CARD_CO_CD                     VARCHAR2(2) 
+CARD_VALID_YYYYMM              VARCHAR2(4) 
+ORG_OPER_DT                    VARCHAR2(8) 
+TERMINAL_ID                    VARCHAR2(10)
+CARD_INPUT_SP                  VARCHAR2(1) 
+APPROVAL_SP                    VARCHAR2(1) 
+ACK_VAN_CD                     VARCHAR2(1) 
+CARD_VAT_AMT                   NUMBER(11,2)
+ELECTRO_SIGNATURE_YN           VARCHAR2(1) 
+MD_BOND_BARCD                  VARCHAR2(16)
+COMM_MSG_SEQ                   VARCHAR2(50)
+CARD_COOP_SP                   VARCHAR2(2) 
+CARD_COOP_DC_RATE1             VARCHAR2(3) 
+CARD_COOP_DC_AMT1              NUMBER(11,2)
+CARD_COOP_DC_RATE2             VARCHAR2(3) 
+CARD_COOP_DC_AMT2              NUMBER(11,2)
+POINT_CALC_AMT                 NUMBER(11,2)
+SAVE_POINT                     NUMBER(9)   
+REGI_USER_ID          NOT NULL VARCHAR2(15)
+REGI_DTTM             NOT NULL DATE        
+FINAL_MOD_USER_ID     NOT NULL VARCHAR2(15)
+FINAL_MOD_DTTM        NOT NULL DATE        
+DBL_POINT_YN                   VARCHAR2(1) 
+SAMSUNG_BASIC_POINT            NUMBER(10)  
+SAMSUNG_DBL_POINT              NUMBER(10)  
+SHINHAN_BASIC_POINT            NUMBER(10)  
+SHINHAN_DBL_POINT              NUMBER(10)  
+ATTR_C1                        VARCHAR2(30)
+ATTR_C2                        VARCHAR2(30)
+ATTR_C3                        VARCHAR2(30)
+CARD_INFO_HASH                 VARCHAR2(20)
+POINT_COOP_SP                  VARCHAR2(2) 
+POINT_COO_BASIC_POINT          NUMBER(10)  
+POINT_COO_DBL_POINT            NUMBER(10)  
+ETC_IMP_AMT                    NUMBER(11,2)
+CJONE_PNT_TENDER_AMT           NUMBER(11,2)
+REQ_AMT                        NUMBER(11,2)
+이름                    널?       유형          
+--------------------- -------- ------------
+OPER_DT               NOT NULL VARCHAR2(8) 
+ORIGIN_BIZPL_CD       NOT NULL VARCHAR2(5) 
+POS_NO                NOT NULL VARCHAR2(4) 
+RECEIPT_NO            NOT NULL VARCHAR2(33)
+SEQ_NO                NOT NULL VARCHAR2(3) 
+COMM_MSG_SEQ                   VARCHAR2(50)
+BIZPL_CD                       VARCHAR2(5) 
+CARD_NO                        VARCHAR2(64)
+CUST_NO                        VARCHAR2(64)
+GUEST_GRADE                    VARCHAR2(2) 
+CUST_NOR_INQ_FLAG              VARCHAR2(1) 
+INPUT_SP                       VARCHAR2(1) 
+NOR_CANCEL_SP                  VARCHAR2(1) 
+NORMAL_AMT                     NUMBER(11,2)
+COOPERATION_AMT                NUMBER(11,2)
+EMP_AMT                        NUMBER(11,2)
+POINT_SP                       VARCHAR2(1) 
+USE_PRE_REMAIN_POINT           NUMBER(11,2)
+USE_POINT                      NUMBER(11,2)
+TOT_POINT                      NUMBER(11,2)
+BASIC_POINT                    NUMBER(11,2)
+EVENT_POINT                    NUMBER(11,2)
+REMAINDER_POINT                NUMBER(11,2)
+REPLY_CD                       VARCHAR2(20)
+ONLINE_ACK_YN                  VARCHAR2(1) 
+ORG_OPER_DT                    VARCHAR2(8) 
+ORG_POS_NO                     VARCHAR2(4) 
+ORG_RECEIPT_NO                 VARCHAR2(33)
+TRAN_SP                        VARCHAR2(1) 
+JSEXC_POINT                    NUMBER(13,2)
+REGI_USER_ID          NOT NULL VARCHAR2(15)
+REGI_DTTM             NOT NULL DATE        
+FINAL_MOD_USER_ID     NOT NULL VARCHAR2(15)
+FINAL_MOD_DTTM        NOT NULL DATE        
+CUST_SP                        VARCHAR2(1) 
+SAMSUNG_BASIC_POINT            NUMBER(10)  
+SAMSUNG_DBL_POINT              NUMBER(10)  
+SHINHAN_BASIC_POINT            NUMBER(10)  
+SHINHAN_DBL_POINT              NUMBER(10)  
+ORG_COMM_MSG_SEQ               VARCHAR2(50)
+ACK_DT                         VARCHAR2(8) 
+ORG_ACK_DT                     VARCHAR2(8) 
+CJONE_PNT_TENDER_AMT           NUMBER(11,2)
+CJONE_PNT_DC_AMT               NUMBER(11,2)
+FIRST_BUY_YN                   VARCHAR2(1) 
+POINT_COOP_SP                  VARCHAR2(2) 
+POINT_COO_BASIC_POINT          NUMBER(10)  
+POINT_COO_DBL_POINT            NUMBER(10)  
+이름                      널?       유형          
+----------------------- -------- ------------
+OPER_DT                 NOT NULL VARCHAR2(8) 
+ORIGIN_BIZPL_CD         NOT NULL VARCHAR2(5) 
+POS_NO                  NOT NULL VARCHAR2(4) 
+RECEIPT_NO              NOT NULL VARCHAR2(33)
+SEQ_NO                  NOT NULL VARCHAR2(3) 
+BIZPL_CD                         VARCHAR2(5) 
+SALE_SP                          VARCHAR2(2) 
+ITEM_INPUT_SP                    VARCHAR2(1) 
+SETTLE_MNG_CD                    VARCHAR2(3) 
+DEPART_CD                        VARCHAR2(2) 
+LINE_CD                          VARCHAR2(4) 
+CLASS_CD                         VARCHAR2(6) 
+SUB_CLASS_CD                     VARCHAR2(2) 
+BRAND_CD                         VARCHAR2(6) 
+GOODS_CD                         VARCHAR2(13)
+ASSOCI_CD                        VARCHAR2(13)
+GOODS_GRP                        VARCHAR2(1) 
+GOODS_SP                         VARCHAR2(1) 
+SALE_QTY                         NUMBER(7)   
+SCALE_QTY                        NUMBER(11,2)
+QTY_WEIGHT_SP                    VARCHAR2(1) 
+COST                             NUMBER(11,2)
+DB_PRC                           NUMBER(11,2)
+PRC                              NUMBER(11,2)
+POS_DC_SP                        VARCHAR2(1) 
+DC_PRC                           NUMBER(11,2)
+SALE_AMT                         NUMBER(11,2)
+SALE_VAT                         NUMBER(11,2)
+VAT_SP                           VARCHAR2(1) 
+VAT_RATE                         NUMBER(11,2)
+BOTTLE_CD                        VARCHAR2(5) 
+BTL_DEPOSIT_COST                 NUMBER(11,2)
+SKU_CANCEL_YN                    VARCHAR2(1) 
+SALE_BUY_TRUST_SP                VARCHAR2(2) 
+SALE_CD_YN                       VARCHAR2(1) 
+SKU_MV_POSBL_YN                  VARCHAR2(1) 
+SPECIAL_GOODS_TYPE_SP            VARCHAR2(1) 
+DIY_GOODS_CD                     VARCHAR2(13)
+DIY_EVENT_YYYY                   VARCHAR2(4) 
+DIY_EVENT_CD                     VARCHAR2(6) 
+DIY_SEQ                          NUMBER(5)   
+POS_DC_FLAG                      VARCHAR2(1) 
+POS_DC_RATE                      VARCHAR2(2) 
+POS_DC_AMT                       NUMBER(11,2)
+PROMO_CD                         VARCHAR2(10)
+PROMO_SP                         VARCHAR2(1) 
+PROMO_DC_QTY                     NUMBER(5)   
+PROMO_DC_AMT                     NUMBER(11,2)
+DC_COUPON_AMT                    NUMBER(11,2)
+POINTER_SP                       VARCHAR2(1) 
+DC_CREDIT_SP                     VARCHAR2(1) 
+DC_EMP_CREDIT_SP                 VARCHAR2(1) 
+CASH_CPN_APPLY_SP                VARCHAR2(1) 
+BASIC_POINT                      NUMBER(10)  
+OY_DAY_POINT                     NUMBER(10)  
+POINT_EVENT_CD                   VARCHAR2(10)
+EVENT_POINT                      NUMBER(10)  
+REGI_USER_ID                     VARCHAR2(15)
+REGI_DTTM                        DATE        
+FINAL_MOD_USER_ID                VARCHAR2(15)
+FINAL_MOD_DTTM                   DATE        
+GOODFLAG                         VARCHAR2(2) 
+SAMSUNG_BASIC_POINT              NUMBER(10)  
+SAMSUNG_DBL_POINT                NUMBER(10)  
+SHINHAN_BASIC_POINT              NUMBER(10)  
+SHINHAN_DBL_POINT                NUMBER(10)  
+DC_CREDIT_AMT                    NUMBER(11,2)
+DC_EMP_CREDIT_AMT                NUMBER(11,2)
+REAL_SALE_AMT                    NUMBER(11,2)
+REAL_SALE_VAT                    NUMBER(11,2)
+SUPLR_CD                         VARCHAR2(6) 
+ATTR_C1                          VARCHAR2(30)
+ATTR_C2                          VARCHAR2(30)
+ATTR_C3                          VARCHAR2(30)
+ATTR_N1                          NUMBER(10,2)
+ATTR_N2                          NUMBER(10,2)
+ATTR_N3                          NUMBER(10,2)
+PROMO_SPRMTN_CD                  VARCHAR2(11)
+PROMO_PRMTN_COND_NO              VARCHAR2(10)
+POINT_SPRMTN_CD                  VARCHAR2(11)
+POINT_PRMTN_COND_NO              VARCHAR2(10)
+GIFT_SPRMTN_CD                   VARCHAR2(11)
+GIFT_PRMTN_COND_NO               VARCHAR2(10)
+LSM_SPRMTN_CD                    VARCHAR2(11)
+LSM_PRMTN_COND_NO                VARCHAR2(10)
+LSM_DC_AMT                       NUMBER(11,2)
+WSELFCS_GDS_YN                   VARCHAR2(1) 
+LSM_COUPON_CD                    VARCHAR2(30)
+CJONE_PNT_SPRMTN_CD              VARCHAR2(11)
+CJONE_PNT_PRMTN_COND_NO          VARCHAR2(10)
+CJONE_PNT_TENDER_AMT             NUMBER(11,2)
+CJONE_PNT_DC_AMT                 NUMBER(11,2)
+CARD_COOP_SP                     VARCHAR2(2) 
+POINT_COOP_SP                    VARCHAR2(2) 
+POINT_COO_BASIC_POINT            NUMBER(10)  
+POINT_COO_DBL_POINT              NUMBER(10)  
+이름                   널?       유형           
+-------------------- -------- -------------
+VOC_RCP_NO           NOT NULL NUMBER(10)   
+GDS_SEQ              NOT NULL NUMBER(10)   
+GDS_CD                        VARCHAR2(13) 
+MANUAL_INPT_YN       NOT NULL VARCHAR2(1)  
+MANUAL_INPT_GDS_NM            VARCHAR2(200)
+GDS_LCLS_CD                   VARCHAR2(2)  
+GDS_MCLS_CD                   VARCHAR2(4)  
+GDS_SCLS_CD                   VARCHAR2(6)  
+MD_EMP_NO                     VARCHAR2(10) 
+ONYONE_SP_CD                  VARCHAR2(1)  
+GDS_STAT_CD                   VARCHAR2(1)  
+BRND_CD                       VARCHAR2(6)  
+SUPLR_CD                      VARCHAR2(6)  
+GDS_MFG_YMD_NM                VARCHAR2(200)
+GDS_DSTR_TLMT_YMD_NM          VARCHAR2(200)
+GDS_MFG_NO_NM                 VARCHAR2(200)
+REG_USR_ID           NOT NULL VARCHAR2(50) 
+REG_DT               NOT NULL DATE         
+MOD_USR_ID           NOT NULL VARCHAR2(50) 
+MOD_DT               NOT NULL DATE         
+BM_EMP_NO01                   VARCHAR2(10) 
+BM_EMP_NO02                   VARCHAR2(10) 
+BM_EMP_NO03                   VARCHAR2(10) 
+BM_EMP_NO04                   VARCHAR2(10) 
+BM_EMP_NO05                   VARCHAR2(10) 
+BM_EMP_NO06                   VARCHAR2(10) 
+BM_EMP_NO07                   VARCHAR2(10) 
+BM_EMP_NO08                   VARCHAR2(10) 
+BM_EMP_NO09                   VARCHAR2(10) 
+BM_EMP_NO10                   VARCHAR2(10) 
+이름             널?       유형            
+-------------- -------- --------------
+VOC_RCP_NO     NOT NULL NUMBER(10)    
+CHG_SEQ        NOT NULL NUMBER(10)    
+ACT_CONT                VARCHAR2(4000)
+ACT_RSLT_SP_CD          VARCHAR2(3)   
+ACT_YMD                 VARCHAR2(8)   
+USE_YN                  VARCHAR2(1)   
+REG_USR_ID     NOT NULL VARCHAR2(50)  
+REG_DT         NOT NULL DATE          
+MOD_USR_ID     NOT NULL VARCHAR2(50)  
+MOD_DT         NOT NULL DATE          
+이름                 널?       유형           
+------------------ -------- -------------
+VOC_CLS_CD         NOT NULL VARCHAR2(6)  
+VOC_CLS_CD_LVL_NUM          NUMBER(20)   
+VOC_CLS_CD_NM               VARCHAR2(200)
+UPR_VOC_CLS_CD              VARCHAR2(6)  
+USE_YN                      VARCHAR2(1)  
+VOC_CLS_SP_CD               VARCHAR2(2)  
+IMPUT_CAUSE_SP_CD           VARCHAR2(1)  
+REG_USR_ID         NOT NULL VARCHAR2(50) 
+REG_DT             NOT NULL DATE         
+MOD_USR_ID         NOT NULL VARCHAR2(50) 
+MOD_DT             NOT NULL DATE         
+VOC_USE_SP_CD               VARCHAR2(2)  
+이름                    널?       유형            
+--------------------- -------- --------------
+VOC_RCP_NO            NOT NULL NUMBER(10)    
+MEM_YN                         VARCHAR2(1)   
+MEM_NO                         VARCHAR2(16)  
+CUST_NM                        VARCHAR2(200) 
+BASC_PHONE_NO                  VARCHAR2(100) 
+ADD_PHONE_NO                   VARCHAR2(100) 
+CUST_EMAIL_ADDR                VARCHAR2(200) 
+DUP_RCP_YN                     VARCHAR2(1)   
+PROC_STDRD_VOC_RCP_NO          NUMBER(10)    
+VOC_RCP_CHNL_CD                VARCHAR2(2)   
+RCP_STR_CD                     VARCHAR2(4)   
+RCP_DT                         DATE          
+OCCR_DT                        DATE          
+PROC_TLMT_DT                   DATE          
+VOC_CSLT_SUBJ_NM               VARCHAR2(1000)
+VOC_CSLT_CONT                  CLOB          
+VOC_ANS_SUBJ_NM                VARCHAR2(1000)
+VOC_ANS_CONT                   CLOB          
+CUST_EMAIL_SND_YN              VARCHAR2(1)   
+CUST_EMAIL_SND_DT              DATE          
+VOC_KND_CD                     VARCHAR2(3)   
+VOC_CSLT_TYP_CD                VARCHAR2(1)   
+VOC_LCLS_CD                    VARCHAR2(6)   
+VOC_MCLS_CD                    VARCHAR2(6)   
+VOC_SCLS_CD                    VARCHAR2(6)   
+SWFT_SHARE_YN                  VARCHAR2(1)   
+ALL_SHARE_YN                   VARCHAR2(1)   
+ALL_SHARE_DT                   DATE          
+SHARE_PROC_USR_ID              VARCHAR2(50)  
+IMPUT_CAUSE_SP_CD              VARCHAR2(3)   
+IMPUT_CAUSE_DTL_SP_CD          VARCHAR2(3)   
+IMPUT_CAUSE_CONT               VARCHAR2(4000)
+VOC_PROC_STAT_CD               VARCHAR2(1)   
+PROC_AMT                       NUMBER(20)    
+PROC_DT                        DATE          
+MPROC_HR_DEPT_CD               VARCHAR2(10)  
+MPROC_STR_CD                   VARCHAR2(4)   
+MPROC_CHRGR_NO1                VARCHAR2(13)  
+MPROC_CHRGR_NO2                VARCHAR2(13)  
+SPROC_HR_DEPT_CD               VARCHAR2(10)  
+SPROC_STR_CD                   VARCHAR2(4)   
+SPROC_CHRGR_NO1                VARCHAR2(13)  
+SPROC_CHRGR_NO2                VARCHAR2(13)  
+HMPG_QNA_ID                    VARCHAR2(20)  
+HMPG_SP_NM                     VARCHAR2(200) 
+HMPG_SP_NM2                    VARCHAR2(200) 
+HMPG_TRANS_DT                  DATE          
+HMPG_TRANS_SUCC_YN             VARCHAR2(1)   
+MSR_REQ_DT                     DATE          
+TODO_KEY_ID                    VARCHAR2(27)  
+USE_YN                         VARCHAR2(1)   
+REG_USR_ID            NOT NULL VARCHAR2(50)  
+REG_DT                NOT NULL DATE          
+MOD_USR_ID            NOT NULL VARCHAR2(50)  
+MOD_DT                NOT NULL DATE          
+GDS_WTHDRW_YN                  VARCHAR2(2)   
+ISSU_VOC_YN                    VARCHAR2(2)   
+CUST_MSR_MTHD                  VARCHAR2(3)   
+REWARD_YN                      VARCHAR2(2)   
+IS_EMERGENCY                   VARCHAR2(1)   
+ANSWER_YN                      VARCHAR2(1)   
+STKIN_DT                       DATE          
+SALES_DT                       DATE          
+HAVE_INPUT1                    VARCHAR2(6)   
+HAVE_INPUT2                    VARCHAR2(6)   
+HAVE_INPUT3                    VARCHAR2(6)   
+HAVE_INPUT4                    VARCHAR2(6)   
+HAVE_INPUT5                    VARCHAR2(6)   
+MSR_INPUT1                     VARCHAR2(6)   
+MSR_INPUT2                     VARCHAR2(6)   
+MSR_INPUT3                     VARCHAR2(6)   
+MSR_INPUT4                     VARCHAR2(6)   
+MSR_INPUT5                     VARCHAR2(6)   
+MSR_INPUT6                     VARCHAR2(6)   
+MSR_INPUT7                     VARCHAR2(6)   
+MSR_INPUT8                     VARCHAR2(6)   
+ETC                            VARCHAR2(200) 
+ETC2                           VARCHAR2(200) 
+ETC3                           VARCHAR2(200) 
+ETC4                           VARCHAR2(200) 
+CUST_AGE                       VARCHAR2(6)   
+HELP_TGT_YN                    VARCHAR2(6)   
+CUST_GENDER                    VARCHAR2(6)   
+ETC_YN                         VARCHAR2(2)   
+SOLUTION_CONT                  VARCHAR2(4000)
+GUID_NEED_YN                   VARCHAR2(2)   
+COP_YN                         VARCHAR2(2)   
+CNFM_REQ_YMD                   DATE          
+CNFM_CONT                      VARCHAR2(4000)
+CNFM_NM                        VARCHAR2(90)  
+HQ_IMPORTANCE_ISSU_CD          VARCHAR2(10)  
+이름                 널?       유형            
+------------------ -------- --------------
+STTL_TYP_CD        NOT NULL VARCHAR2(2)   
+STTL_CD            NOT NULL VARCHAR2(2)   
+STTL_SP_CD         NOT NULL VARCHAR2(1)   
+LCD_STTL_NM                 VARCHAR2(200) 
+POS_STTL_NM                 VARCHAR2(200) 
+PNT_OCCR_YN                 VARCHAR2(1)   
+PNT_ACCM_RT                 NUMBER(18,6)  
+PNT_ALLW_GRP_CD             VARCHAR2(1)   
+CASH_RCPT_PBLSH_YN          VARCHAR2(1)   
+STTL_GRP_CD                 VARCHAR2(1)   
+APPLY_STR_SCOPE_CD          VARCHAR2(1)   
+FC_ACCT_CD1                 VARCHAR2(6)   
+FC_ACCT_CD2                 VARCHAR2(6)   
+DBCD_SP_CD                  VARCHAR2(1)   
+TAX_CD                      VARCHAR2(2)   
+USE_YN                      VARCHAR2(1)   
+REG_USR_ID         NOT NULL VARCHAR2(50)  
+REG_DT             NOT NULL DATE          
+MOD_USR_ID         NOT NULL VARCHAR2(50)  
+MOD_DT             NOT NULL DATE          
+RMK                         VARCHAR2(4000)
+CORPCO_CD                   VARCHAR2(6)   
+STR_FEE_MNG_YN              VARCHAR2(1)   
+이름                          널?       유형           
+--------------------------- -------- -------------
+STTL_TYP_CD                 NOT NULL VARCHAR2(2)  
+LCD_STTL_TYP_NM                      VARCHAR2(200)
+POS_STTL_TYP_NM                      VARCHAR2(200)
+CHAMT_OCCR_YN                        VARCHAR2(1)  
+RTN_PROC_YN                          VARCHAR2(1)  
+GFTCRD_SEL_STTL_PSBL_YN              VARCHAR2(1)  
+CRDT_SAL_STTL_PSBL_YN                VARCHAR2(1)  
+STTL_CANCL_PSBL_YN                   VARCHAR2(1)  
+CRDT_SAL_DELAY_STTL_PSBL_YN          VARCHAR2(1)  
+USE_YN                               VARCHAR2(1)  
+REG_USR_ID                  NOT NULL VARCHAR2(50) 
+REG_DT                      NOT NULL DATE         
+MOD_USR_ID                  NOT NULL VARCHAR2(50) 
+MOD_DT                      NOT NULL DATE         
+이름                             널?       유형           
+------------------------------ -------- -------------
+BIZPLC_CD                      NOT NULL VARCHAR2(4)  
+BIZPLC_NM                               VARCHAR2(200)
+BIZPLC_SHRT_NM                          VARCHAR2(200)
+REPR_NM                                 VARCHAR2(200)
+NATN_CD                                 VARCHAR2(2)  
+RD_NM_ZIP_NO                            VARCHAR2(6)  
+RD_NM_SIGUNGU_ADDR                      VARCHAR2(500)
+RD_NM_DTL_ADDR1                         VARCHAR2(500)
+RD_NM_DTL_ADDR2                         VARCHAR2(500)
+ADDRNO_SIGUNGU_ADDR                     VARCHAR2(500)
+ADDRNO_DTL_ADDR1                        VARCHAR2(500)
+ADDRNO_DTL_ADDR2                        VARCHAR2(500)
+BIZPLC_PHONE_NO                         VARCHAR2(100)
+BIZPLC_FAX_NO                           VARCHAR2(100)
+BIZREG_NO                               VARCHAR2(10) 
+BIZREG_YMD                              VARCHAR2(8)  
+BIZCON_NM                               VARCHAR2(200)
+BIZITM_NM                               VARCHAR2(200)
+ERP_TRDR_CD                             VARCHAR2(10) 
+ERP_REQ_YN                              VARCHAR2(1)  
+FNC_TEAM_CNFM_STAT_CD                   VARCHAR2(1)  
+SPLY_ENT_FNC_TEAM_CNFM_STAT_CD          VARCHAR2(1)  
+VAT_BIZPLC_SP_CD                        VARCHAR2(4)  
+BIZPLC_TYP_CD                           VARCHAR2(1)  
+STR_TYP_CD                              VARCHAR2(2)  
+BIZPLC_SHAPE_CD                         VARCHAR2(2)  
+DMNG_FC_SP_CD                           VARCHAR2(1)  
+ENTSTR_SHAPE_CD                         VARCHAR2(2)  
+SEL_CHNL_CD                             VARCHAR2(2)  
+COLC_BIZPLC_CD                          VARCHAR2(4)  
+PO_RGN_CD                               VARCHAR2(2)  
+WTHR_RGN_CD                             VARCHAR2(3)  
+SLBIZ_BRNSTR_CD                         VARCHAR2(5)  
+SLBIZ_PAR_CD                            VARCHAR2(10) 
+STRMGR_EMP_NO                           VARCHAR2(10) 
+TMP_OPEN_YMD                            VARCHAR2(8)  
+OPEN_YMD                                VARCHAR2(8)  
+CLSTR_YMD                               VARCHAR2(8)  
+TRNF_BEF_BIZPLC_CD                      VARCHAR2(4)  
+TRNF_AFT_BIZPLC_CD                      VARCHAR2(4)  
+TOVR_TYP_CD                             VARCHAR2(1)  
+TOVR_YMD                                VARCHAR2(8)  
+FRST_BIZPLC_CD                          VARCHAR2(4)  
+BUY_MOD_LDTM_NUM                        NUMBER(20)   
+DD_MAX_PO_QTY                           NUMBER(20)   
+MAX_PO_QTY_EXCP_YN                      VARCHAR2(1)  
+SELF_PO_PSBL_GDS_QTY                    NUMBER(20)   
+STK_STBL_TGT_YN                         VARCHAR2(1)  
+AUTO_PO_YN                              VARCHAR2(1)  
+INIT_STK_AMT                            NUMBER(20)   
+PO_APPLY_YMD                            VARCHAR2(8)  
+EXCALC_APPLY_YMD                        VARCHAR2(8)  
+USE_YN                                  VARCHAR2(1)  
+REG_USR_ID                     NOT NULL VARCHAR2(50) 
+REG_DT                         NOT NULL DATE         
+MOD_USR_ID                     NOT NULL VARCHAR2(50) 
+MOD_DT                         NOT NULL DATE         
+SAL_CLS_YMD                             VARCHAR2(8)  
+이름                           널?       유형            
+---------------------------- -------- --------------
+BIZPLC_ENV_CD                NOT NULL VARCHAR2(40)  
+BIZPLC_ENV_APPLY_SCOPE_SP_CD NOT NULL VARCHAR2(6)   
+BIZPLC_ENV_CD_NM                      VARCHAR2(1000)
+BEF_BIZPLC_ENV_CD_NM                  VARCHAR2(1000)
+BIZPLC_ENV_CD_APPLY_YMD               VARCHAR2(8)   
+BIZPLC_ENV_CD_END_YMD                 VARCHAR2(8)   
+REG_USR_ID                   NOT NULL VARCHAR2(50)  
+REG_DT                       NOT NULL DATE          
+MOD_USR_ID                   NOT NULL VARCHAR2(50)  
+MOD_DT                       NOT NULL DATE          
+이름            널?       유형          
+------------- -------- ------------
+SPRMTN_CD     NOT NULL VARCHAR2(11)
+PRMTN_COND_NO NOT NULL VARCHAR2(10)
+CUST_GRD      NOT NULL VARCHAR2(2) 
+GET_QTY_AMT            NUMBER(20)  
+REG_USR_ID    NOT NULL VARCHAR2(50)
+REG_DT        NOT NULL DATE        
+MOD_USR_ID    NOT NULL VARCHAR2(50)
+MOD_DT        NOT NULL DATE        
+이름                       널?       유형           
+------------------------ -------- -------------
+SPRMTN_CD                NOT NULL VARCHAR2(11) 
+LPRMTN_CD                NOT NULL VARCHAR2(8)  
+SPRMTN_NM                NOT NULL VARCHAR2(200)
+SPRMTN_TYP_CD            NOT NULL VARCHAR2(2)  
+CUSTCO_CD                         VARCHAR2(6)  
+COST_APPLY_STRT_YMD               VARCHAR2(8)  
+COST_APPLY_END_YMD                VARCHAR2(8)  
+PRMTN_EXCALC_STDRD_CD             VARCHAR2(1)  
+PRMTN_EXCALC_YM                   VARCHAR2(6)  
+PRMTN_STRT_YMD                    VARCHAR2(8)  
+PRMTN_END_YMD                     VARCHAR2(8)  
+PRMTN_STRT_HMS                    VARCHAR2(6)  
+PRMTN_END_HMS                     VARCHAR2(6)  
+PRMTN_STOP_YN            NOT NULL VARCHAR2(1)  
+PRMTN_STOP_YMD                    VARCHAR2(8)  
+PRMTN_STOP_RSN_CONT               VARCHAR2(500)
+BUYC_STR_PARTI_SP_CD              VARCHAR2(1)  
+BUYC_CUST_SP_CD_LST_CONT          VARCHAR2(500)
+BUYC_PSBL_DAY_CD                  VARCHAR2(7)  
+GETC_STR_PARTI_SP_CD              VARCHAR2(1)  
+GETC_CUST_SP_CD_LST_CONT          VARCHAR2(500)
+GETC_PSBL_DAY_CD                  VARCHAR2(7)  
+COUPN_PBLSH_STRT_YMD              VARCHAR2(8)  
+COUPN_PBLSH_END_YMD               VARCHAR2(8)  
+COUPN_PBLSH_STRT_HMS              VARCHAR2(6)  
+COUPN_PBLSH_END_HMS               VARCHAR2(6)  
+GIFT_REQ_STRT_YMD                 VARCHAR2(8)  
+GIFT_REQ_END_YMD                  VARCHAR2(8)  
+PRMTN_VERI_CMPLT_YN      NOT NULL VARCHAR2(1)  
+USE_YN                   NOT NULL VARCHAR2(1)  
+TMP_SAVE_YN                       VARCHAR2(1)  
+REG_USR_ID               NOT NULL VARCHAR2(50) 
+REG_DT                   NOT NULL DATE         
+MOD_USR_ID               NOT NULL VARCHAR2(50) 
+MOD_DT                   NOT NULL DATE         
+NEWSTR_AUTO_ADD_YN       NOT NULL VARCHAR2(1)  
+NEWSTR_AUTO_ADD_SP_CD             VARCHAR2(1)  
+CUST_GRD_APPLY_YN                 VARCHAR2(1)  
+SPRMTN_INFO                       VARCHAR2(600)
+TRN_COUPN_YN                      VARCHAR2(2)  
+TODAY_SPECIAL_PRC_YN              VARCHAR2(2)  
+이름                      널?       유형           
+----------------------- -------- -------------
+SPRMTN_CD               NOT NULL VARCHAR2(11) 
+BUYC_GETC_SP_CD         NOT NULL VARCHAR2(1)  
+STR_CD                  NOT NULL VARCHAR2(4)  
+PARTI_SP_CD                      VARCHAR2(1)  
+STR_PRMTN_STOP_YN                VARCHAR2(1)  
+STR_PRMTN_STOP_YMD               VARCHAR2(8)  
+STR_PRMTN_STOP_RSN_CONT          VARCHAR2(500)
+GOAL_QTY                         NUMBER(20)   
+GOAL_AMT                         NUMBER(20)   
+USE_YN                  NOT NULL VARCHAR2(1)  
+REG_USR_ID              NOT NULL VARCHAR2(50) 
+REG_DT                  NOT NULL DATE         
+MOD_USR_ID              NOT NULL VARCHAR2(50) 
+MOD_DT                  NOT NULL DATE         
+이름                 널?       유형          
+------------------ -------- ------------
+SPRMTN_CD          NOT NULL VARCHAR2(11)
+PRMTN_COND_NO      NOT NULL VARCHAR2(10)
+GDS_CD             NOT NULL VARCHAR2(13)
+SEQ                NOT NULL NUMBER(10)  
+GIFT_QTY                    NUMBER(20)  
+APPLY_STRT_QTY_AMT          NUMBER(20)  
+APPLY_END_QTY_AMT           NUMBER(20)  
+REG_USR_ID         NOT NULL VARCHAR2(50)
+REG_DT             NOT NULL DATE        
+MOD_USR_ID         NOT NULL VARCHAR2(50)
+MOD_DT             NOT NULL DATE        
+CUST_GRD                    VARCHAR2(2) 
+이름                   널?       유형          
+-------------------- -------- ------------
+GDS_CD               NOT NULL VARCHAR2(13)
+SEL_CHNL_CD          NOT NULL VARCHAR2(2) 
+SPRMTN_CD            NOT NULL VARCHAR2(11)
+COST_APPLY_STRT_YMD  NOT NULL VARCHAR2(8) 
+COST_APPLY_END_YMD            VARCHAR2(8) 
+STKOUTPRC_RT                  NUMBER(18,6)
+PRMTN_STKOUTPRC_UPRC          NUMBER(20)  
+USE_YN               NOT NULL VARCHAR2(1) 
+REG_USR_ID           NOT NULL VARCHAR2(50)
+REG_DT               NOT NULL DATE        
+MOD_USR_ID           NOT NULL VARCHAR2(50)
+MOD_DT               NOT NULL DATE        
+이름                    널?       유형          
+--------------------- -------- ------------
+GDS_CD                NOT NULL VARCHAR2(13)
+SEL_CHNL_CD           NOT NULL VARCHAR2(2) 
+SPRMTN_CD             NOT NULL VARCHAR2(11)
+SELPRC_APPLY_STRT_YMD NOT NULL VARCHAR2(8) 
+SELPRC_APPLY_END_YMD           VARCHAR2(8) 
+PRMTN_SELPRC_UPRC              NUMBER(20)  
+PRMTN_SELPRC_DC_RT             NUMBER(18,6)
+USE_YN                NOT NULL VARCHAR2(1) 
+REG_USR_ID            NOT NULL VARCHAR2(50)
+REG_DT                NOT NULL DATE        
+MOD_USR_ID            NOT NULL VARCHAR2(50)
+MOD_DT                NOT NULL DATE        
+이름                      널?       유형            
+----------------------- -------- --------------
+SPRMTN_CD               NOT NULL VARCHAR2(11)  
+PRMTN_COND_NO           NOT NULL VARCHAR2(10)  
+BUYC_GETC_SP_CD         NOT NULL VARCHAR2(1)   
+GDS_CD                  NOT NULL VARCHAR2(13)  
+EXCALC_MTHD_CD                   VARCHAR2(1)   
+NORM_COST_UPRC                   NUMBER(20)    
+NORM_SELPRC_UPRC                 NUMBER(20)    
+DC_COST_UPRC                     NUMBER(20)    
+DC_SELPRC_UPRC                   NUMBER(20)    
+PNT_MTPL                         NUMBER(20)    
+SUPLR_CD                         VARCHAR2(6)   
+SUPLR_SHR_RT                     NUMBER(18,6)  
+SUPLR_SHR_AMT                    NUMBER(20)    
+SUPLR_SHR_PNT_MTPL               NUMBER(20)    
+OY_SOLE_PRGR_YN         NOT NULL VARCHAR2(1)   
+RMK                              VARCHAR2(4000)
+GOAL_QTY                         NUMBER(20)    
+GOAL_AMT                         NUMBER(20)    
+APPLY_STRT_QTY_AMT               NUMBER(20)    
+APPLY_END_QTY_AMT                NUMBER(20)    
+CHRG_MD_EMP_NO                   VARCHAR2(10)  
+ERR_YN                           VARCHAR2(1)   
+ERR_CONT                         VARCHAR2(500) 
+GDS_PRMTN_STOP_YN       NOT NULL VARCHAR2(1)   
+GDS_PRMTN_STOP_YMD               VARCHAR2(8)   
+GDS_PRMTN_STOP_RSN_CONT          VARCHAR2(500) 
+LSM_GDS_APPRV_STAT_CD            VARCHAR2(2)   
+LSM_GDS_GVBAK_RSN_CONT           VARCHAR2(500) 
+REG_USR_ID              NOT NULL VARCHAR2(50)  
+REG_DT                  NOT NULL DATE          
+MOD_USR_ID              NOT NULL VARCHAR2(50)  
+MOD_DT                  NOT NULL DATE          
+SLBIZ_TODO_KEY_ID                VARCHAR2(27)  
+MD_TODO_KEY_ID                   VARCHAR2(27)  
+이름                  널?       유형          
+------------------- -------- ------------
+GDS_CD              NOT NULL VARCHAR2(13)
+COST_APPLY_STRT_YMD NOT NULL VARCHAR2(8) 
+COST_APPLY_END_YMD           VARCHAR2(8) 
+SPRMTN_CD                    VARCHAR2(11)
+PRMTN_COST_UPRC              NUMBER(20)  
+USE_YN              NOT NULL VARCHAR2(1) 
+REG_USR_ID          NOT NULL VARCHAR2(50)
+REG_DT              NOT NULL DATE        
+MOD_USR_ID          NOT NULL VARCHAR2(50)
+MOD_DT              NOT NULL DATE        
+이름                       널?       유형           
+------------------------ -------- -------------
+SPRMTN_CD                NOT NULL VARCHAR2(11) 
+PRMTN_COND_NO            NOT NULL VARCHAR2(10) 
+BUYC_GETC_SP_CD          NOT NULL VARCHAR2(1)  
+SEQ                      NOT NULL NUMBER(10)   
+GDS_LCLS_CD                       VARCHAR2(2)  
+GDS_MCLS_CD                       VARCHAR2(4)  
+GDS_SCLS_CD                       VARCHAR2(6)  
+BRND_CD                           VARCHAR2(6)  
+SUPLR_CD                          VARCHAR2(6)  
+SUPLR_SHR_RT                      NUMBER(18,6) 
+SUPLR_SHR_PNT_MTPL                NUMBER(20)   
+GOAL_QTY                          NUMBER(20)   
+GOAL_AMT                          NUMBER(20)   
+APPLY_STRT_QTY_AMT                NUMBER(20)   
+APPLY_END_QTY_AMT                 NUMBER(20)   
+PNT_MTPL                          NUMBER(20)   
+GDSG_PRMTN_STOP_YN       NOT NULL VARCHAR2(1)  
+GDSG_PRMTN_STOP_YMD               VARCHAR2(8)  
+GDSG_PRMTN_STOP_RSN_CONT          VARCHAR2(500)
+USE_YN                   NOT NULL VARCHAR2(1)  
+REG_USR_ID               NOT NULL VARCHAR2(50) 
+REG_DT                   NOT NULL DATE         
+MOD_USR_ID               NOT NULL VARCHAR2(50) 
+MOD_DT                   NOT NULL DATE         
+이름              널?       유형          
+--------------- -------- ------------
+SPRMTN_CD       NOT NULL VARCHAR2(11)
+PRMTN_COND_NO   NOT NULL VARCHAR2(10)
+BUYC_GETC_SP_CD NOT NULL VARCHAR2(1) 
+GDS_CD          NOT NULL VARCHAR2(13)
+REG_USR_ID      NOT NULL VARCHAR2(50)
+REG_DT          NOT NULL DATE        
+MOD_USR_ID      NOT NULL VARCHAR2(50)
+MOD_DT          NOT NULL DATE        
+이름                        널?       유형            
+------------------------- -------- --------------
+SPRMTN_CD                 NOT NULL VARCHAR2(11)  
+PRMTN_COND_NO             NOT NULL VARCHAR2(10)  
+PRMTN_COND_SP_CD                   VARCHAR2(3)   
+PRMTN_SP_CD                        VARCHAR2(2)   
+PRMTN_DTL_SP_CD                    VARCHAR2(2)   
+OFFR_SP_CD                         VARCHAR2(3)   
+ANDOR_SP_CD                        VARCHAR2(1)   
+BUYC_GDSG_CD                       VARCHAR2(2)   
+BUYC_QTY_AMT_SP_CD                 VARCHAR2(1)   
+BUYC_COND_STRT_QTY_AMT             NUMBER(20)    
+BUYC_COND_END_QTY_AMT              NUMBER(20)    
+GETC_GDSG_CD                       VARCHAR2(2)   
+GETC_QTY_AMT_SP_CD                 VARCHAR2(1)   
+GETC_COND_STRT_QTY_AMT             NUMBER(20)    
+GETC_COND_END_QTY_AMT              NUMBER(20)    
+FC_SHR_FAMT_FRT_SP_CD              VARCHAR2(1)   
+FC_SHR_AMT_RT                      NUMBER(18,6)  
+FC_MAX_SPPMNY_AMT                  NUMBER(20)    
+PNT_MTPL                           NUMBER(20)    
+COUPN_PBLSH_SP_CD                  VARCHAR2(2)   
+VLDTY_INSP_YN             NOT NULL VARCHAR2(1)   
+COUPN_SP_CD                        VARCHAR2(2)   
+COUPN_CD                           VARCHAR2(30)  
+CPCOUPN_CD                         VARCHAR2(20)  
+DC_FAMT_FRT_SP_CD                  VARCHAR2(1)   
+COUPN_DC_AMT_RT                    NUMBER(18,6)  
+COUPN_MAX_DC_AMT                   NUMBER(20)    
+ETRY_CD                            VARCHAR2(30)  
+APPLI_STRT_YMD                     VARCHAR2(8)   
+APPLI_END_YMD                      VARCHAR2(8)   
+APPLI_STRT_HMS                     VARCHAR2(6)   
+APPLI_END_HMS                      VARCHAR2(6)   
+APPLI_CHNL_CD                      VARCHAR2(2)   
+CNST_YN                   NOT NULL VARCHAR2(1)   
+WNIN_YN                   NOT NULL VARCHAR2(1)   
+WNIN_NO                            VARCHAR2(20)  
+WNIN_INTVL_NUM                     NUMBER(20)    
+WNIN_QTY                           NUMBER(20)    
+MAX_PBLSH_CNT_SP_CD                VARCHAR2(1)   
+MAX_PBLSH_CNT                      NUMBER(20)    
+PR_YY                              VARCHAR2(4)   
+PR_CD                              VARCHAR2(6)   
+PRMTN_COND_APPRV_STAT_CD           VARCHAR2(2)   
+PRMTN_COND_GVBAK_RSN_CONT          VARCHAR2(500) 
+RMK                                VARCHAR2(4000)
+REG_USR_ID                NOT NULL VARCHAR2(50)  
+REG_DT                    NOT NULL DATE          
+MOD_USR_ID                NOT NULL VARCHAR2(50)  
+MOD_DT                    NOT NULL DATE          
+TENDER_PNT                         NUMBER(20)    
+COUPN_TYP_CD                       VARCHAR2(2)   
+TGT_MEM_SP                         VARCHAR2(1)   
+INTG_COUPN_YN                      VARCHAR2(1)   
+IDS_CUST_SP_CD                     VARCHAR2(2)   
+IDS_CORPCO_AMT_RP                  NUMBER(18,6)  
+IDS_APY_SP_CD                      VARCHAR2(2)   
+이름               널?       유형          
+---------------- -------- ------------
+PUBLISH_COUPN_NO NOT NULL VARCHAR2(30)
+SPRMTN_CD        NOT NULL VARCHAR2(11)
+COUPN_PUBLISH_DT          DATE        
+COUPN_SP_CD               VARCHAR2(2) 
+CUST_NO                   VARCHAR2(64)
+STATUS_SP                 VARCHAR2(1) 
+PBLSH_OPER_DT             VARCHAR2(8) 
+PBLSH_BIZPL_CD            VARCHAR2(5) 
+PBLSH_POS_NO              VARCHAR2(4) 
+PBLSH_RECEIPT_NO          VARCHAR2(5) 
+USE_DT                    DATE        
+USE_OPER_DT               VARCHAR2(8) 
+USE_BIZPL_CD              VARCHAR2(5) 
+USE_POS_NO                VARCHAR2(4) 
+USE_RECEIPT_NO            VARCHAR2(5) 
+REG_USR_ID       NOT NULL VARCHAR2(50)
+REG_DT           NOT NULL DATE        
+MOD_USR_ID       NOT NULL VARCHAR2(50)
+MOD_DT           NOT NULL DATE        
+이름                          널?       유형            
+--------------------------- -------- --------------
+LPRMTN_CD                   NOT NULL VARCHAR2(8)   
+LPRMTN_NM                   NOT NULL VARCHAR2(200) 
+LPRMTN_TYP_CD                        VARCHAR2(2)   
+LPRMTN_STRT_YMD                      VARCHAR2(8)   
+LPRMTN_END_YMD                       VARCHAR2(8)   
+PRMTN_PRPS_CD                        VARCHAR2(2)   
+PRMTN_DESC                           VARCHAR2(4000)
+PRMTN_THEMA_CONT                     VARCHAR2(500) 
+CORPCO_EXPOS_SP_CD                   VARCHAR2(2)   
+LPRMTN_PRGR_STAT_CD                  VARCHAR2(2)   
+CORPCO_NOTI_YMD                      VARCHAR2(8)   
+GDS_REG_STRT_YMD                     VARCHAR2(8)   
+GDS_REG_END_YMD                      VARCHAR2(8)   
+GOAL_FC_INPT_STRT_YMD                VARCHAR2(8)   
+GOAL_FC_INPT_END_YMD                 VARCHAR2(8)   
+GOAL_DMNG_INPT_STRT_YMD              VARCHAR2(8)   
+GOAL_DMNG_INPT_END_YMD               VARCHAR2(8)   
+PRMTN_ADDEXP_AMT                     NUMBER(20)    
+PRMTN_ADDEXP_CONT                    VARCHAR2(500) 
+PR_EXPNS_AGREE_FRM_SP_CD             VARCHAR2(2)   
+PRMTN_PARTI_REQDOC_RCVNG_YN NOT NULL VARCHAR2(1)   
+TODO_KEY_ID                          VARCHAR2(27)  
+PLN_SUBMSS_ELEC_APPV_ID              VARCHAR2(60)  
+RSLT_SUBMSS_ELEC_APPV_ID             VARCHAR2(60)  
+USE_YN                      NOT NULL VARCHAR2(1)   
+REG_USR_ID                  NOT NULL VARCHAR2(50)  
+REG_DT                      NOT NULL DATE          
+MOD_USR_ID                  NOT NULL VARCHAR2(50)  
+MOD_DT                      NOT NULL DATE          
+이름                         널?       유형           
+-------------------------- -------- -------------
+SPRMTN_CD                  NOT NULL VARCHAR2(11) 
+GDS_CD                     NOT NULL VARCHAR2(13) 
+STR_CD                     NOT NULL VARCHAR2(4)  
+STR_REQ_QTY                         NUMBER(20)   
+STKIN_REQ_YMD                       VARCHAR2(8)  
+SLBIZ_VERI_QTY                      NUMBER(20)   
+SCM_PSBL_QTY                        NUMBER(20)   
+SCM_RMK_CONT                        VARCHAR2(500)
+SLBIZ_CNFM_QTY                      NUMBER(20)   
+MKTG_DSTB_QTY                       NUMBER(20)   
+MKTG_VERI_QTY                       NUMBER(20)   
+MKTG_CNFM_QTY                       NUMBER(20)   
+GIFT_DSTB_PRGR_STAT_CD              VARCHAR2(2)  
+LSM_GIFT_DSTB_PRGR_STAT_CD          VARCHAR2(2)  
+LAST_CNFM_YN               NOT NULL VARCHAR2(1)  
+SV_USR_ID                           VARCHAR2(50) 
+TODO_KEY_ID                         VARCHAR2(27) 
+LAST_VERI_USR_ID                    VARCHAR2(50) 
+REG_USR_ID                 NOT NULL VARCHAR2(50) 
+REG_DT                     NOT NULL DATE         
+MOD_USR_ID                 NOT NULL VARCHAR2(50) 
+MOD_DT                     NOT NULL DATE         
+STKIN_TOBE_YMD                      VARCHAR2(8)  
+PO_YMD                              VARCHAR2(8)  
+PO_SLIP_NO                          VARCHAR2(14) 
+이름         널?       유형          
+---------- -------- ------------
+SPRMTN_CD  NOT NULL VARCHAR2(11)
+GDS_CD     NOT NULL VARCHAR2(13)
+GIFT_QTY            NUMBER(20)  
+REG_USR_ID NOT NULL VARCHAR2(50)
+REG_DT     NOT NULL DATE        
+MOD_USR_ID NOT NULL VARCHAR2(50)
+MOD_DT     NOT NULL DATE        
+이름             널?       유형          
+-------------- -------- ------------
+STR_CD         NOT NULL VARCHAR2(4) 
+POG_YW_NUM     NOT NULL NUMBER(20)  
+POG_NO         NOT NULL VARCHAR2(20)
+APPLY_STRT_YMD          VARCHAR2(8) 
+APPLY_END_YMD           VARCHAR2(8) 
+PO_APPLY_YN             VARCHAR2(1) 
+STR_DISP_YN             VARCHAR2(1) 
+POG_LOC_NO              NUMBER(5)   
+USE_YN                  VARCHAR2(1) 
+REG_USR_ID     NOT NULL VARCHAR2(50)
+REG_DT         NOT NULL DATE        
+MOD_USR_ID     NOT NULL VARCHAR2(50)
+MOD_DT         NOT NULL DATE        
+이름             널?       유형          
+-------------- -------- ------------
+STR_CD         NOT NULL VARCHAR2(4) 
+POG_NO         NOT NULL VARCHAR2(20)
+APPLY_STRT_YMD          VARCHAR2(8) 
+APPLY_END_YMD           VARCHAR2(8) 
+PO_APPLY_YN             VARCHAR2(1) 
+STR_DISP_YN             VARCHAR2(1) 
+USE_YN                  VARCHAR2(1) 
+REG_USR_ID     NOT NULL VARCHAR2(50)
+REG_DT         NOT NULL DATE        
+MOD_USR_ID     NOT NULL VARCHAR2(50)
+MOD_DT         NOT NULL DATE        
+이름                  널?       유형          
+------------------- -------- ------------
+POG_NO              NOT NULL VARCHAR2(20)
+POG_BAY_NO          NOT NULL NUMBER(5)   
+POG_SHELF_NO        NOT NULL NUMBER(5)   
+POG_LOC_NO          NOT NULL NUMBER(5)   
+GDS_CD              NOT NULL VARCHAR2(13)
+GDS_DISP_ODR        NOT NULL NUMBER(10)  
+POG_WDTH_FACING_NUM          NUMBER(20)  
+POG_VLEN_FACING_NUM          NUMBER(20)  
+POG_DPTH_FACING_NUM          NUMBER(20)  
+POG_GDS_WDTH_LEN             NUMBER(18,6)
+POG_GDS_VLEN_LEN             NUMBER(18,6)
+POG_GDS_HGHT_LEN             NUMBER(18,6)
+GDS_XAX_CRD_LEN              NUMBER(18,6)
+GDS_YAX_CRD_LEN              NUMBER(18,6)
+USE_YN              NOT NULL VARCHAR2(1) 
+REG_USR_ID          NOT NULL VARCHAR2(50)
+REG_DT              NOT NULL DATE        
+MOD_USR_ID          NOT NULL VARCHAR2(50)
+MOD_DT              NOT NULL DATE        
+BEF_POG_BAY_NO               NUMBER(5)   
+BEF_POG_SHELF_NO             NUMBER(5)   
+BEF_POG_LOC_NO               NUMBER(5)   
+POG_CHG_SP_CD                VARCHAR2(1) 
+CROSS_DISP_YN                VARCHAR2(1) 
+FRONT_DISP_YN                VARCHAR2(1) 
+이름         널?       유형          
+---------- -------- ------------
+POG_NO     NOT NULL VARCHAR2(20)
+GDS_CD     NOT NULL VARCHAR2(13)
+USE_YN     NOT NULL VARCHAR2(1) 
+REG_USR_ID NOT NULL VARCHAR2(50)
+REG_DT     NOT NULL DATE        
+MOD_USR_ID NOT NULL VARCHAR2(50)
+MOD_DT     NOT NULL DATE        
+이름               널?       유형           
+---------------- -------- -------------
+POG_YW_NUM       NOT NULL NUMBER(20)   
+POG_NO           NOT NULL VARCHAR2(20) 
+POG_NM                    VARCHAR2(200)
+DISP_SCLS_CD              VARCHAR2(5)  
+POG_SP_CD                 VARCHAR2(1)  
+POG_BAY_NUM               NUMBER(20)   
+POG_SHELF_NUM             NUMBER(20)   
+POG_LOC_NUM               NUMBER(20)   
+POG_STAT_CD               VARCHAR2(1)  
+POG_STRT_YMD              VARCHAR2(8)  
+POG_END_YMD               VARCHAR2(8)  
+POG_UQ_NO                 NUMBER(10)   
+BEF_POG_VER_NO            NUMBER(10)   
+POG_VER_NO                NUMBER(10)   
+MD_EMP_NO                 VARCHAR2(10) 
+POG_DISP_STR_NUM          NUMBER(20)   
+POG_STAT_DTL_CD           VARCHAR2(3)  
+USE_YN           NOT NULL VARCHAR2(1)  
+REG_USR_ID       NOT NULL VARCHAR2(50) 
+REG_DT           NOT NULL DATE         
+MOD_USR_ID       NOT NULL VARCHAR2(50) 
+MOD_DT           NOT NULL DATE         
+이름               널?       유형           
+---------------- -------- -------------
+POG_NO           NOT NULL VARCHAR2(20) 
+POG_NM                    VARCHAR2(200)
+DISP_SCLS_CD              VARCHAR2(5)  
+POG_SP_CD                 VARCHAR2(1)  
+POG_BAY_NUM               NUMBER(20)   
+POG_SHELF_NUM             NUMBER(20)   
+POG_LOC_NUM               NUMBER(20)   
+POG_STAT_CD               VARCHAR2(1)  
+POG_STRT_YMD              VARCHAR2(8)  
+POG_END_YMD               VARCHAR2(8)  
+POG_UQ_NO                 NUMBER(10)   
+BEF_POG_VER_NO            NUMBER(10)   
+POG_VER_NO                NUMBER(10)   
+MD_EMP_NO                 VARCHAR2(10) 
+POG_DISP_STR_NUM          NUMBER(20)   
+POG_STAT_DTL_CD           VARCHAR2(3)  
+USE_YN           NOT NULL VARCHAR2(1)  
+REG_USR_ID       NOT NULL VARCHAR2(50) 
+REG_DT           NOT NULL DATE         
+MOD_USR_ID       NOT NULL VARCHAR2(50) 
+MOD_DT           NOT NULL DATE         
+이름           널?       유형           
+------------ -------- -------------
+DISP_SCLS_CD NOT NULL VARCHAR2(5)  
+DISP_SCLS_NM          VARCHAR2(200)
+DISP_MCLS_CD          VARCHAR2(5)  
+USE_YN                VARCHAR2(1)  
+REG_USR_ID   NOT NULL VARCHAR2(50) 
+REG_DT       NOT NULL DATE         
+MOD_USR_ID   NOT NULL VARCHAR2(50) 
+MOD_DT       NOT NULL DATE         
+이름             널?       유형           
+-------------- -------- -------------
+DISP_MCLS_CD   NOT NULL VARCHAR2(5)  
+DISP_MCLS_NM            VARCHAR2(200)
+DISP_LCLS_CD            VARCHAR2(5)  
+USE_YN                  VARCHAR2(1)  
+REG_USR_ID     NOT NULL VARCHAR2(50) 
+REG_DT         NOT NULL DATE         
+MOD_USR_ID     NOT NULL VARCHAR2(50) 
+MOD_DT         NOT NULL DATE         
+AUTO_PO_USE_YN          VARCHAR2(1)  
+이름                  널?       유형          
+------------------- -------- ------------
+STR_CD              NOT NULL VARCHAR2(4) 
+GDS_CD              NOT NULL VARCHAR2(13)
+SEL_STRT_YMD                 VARCHAR2(8) 
+SEL_END_YMD                  VARCHAR2(8) 
+DISP_POG_NUM                 NUMBER(20)  
+GDS_TREAT_YN        NOT NULL VARCHAR2(1) 
+STR_PO_GDS_YN       NOT NULL VARCHAR2(1) 
+POG_REG_YN          NOT NULL VARCHAR2(1) 
+POG_REG_HST_YN      NOT NULL VARCHAR2(1) 
+MIN_DISP_ADJ_QTY    NOT NULL NUMBER(20)  
+TREAT_YN_CHG_RSN_CD          VARCHAR2(2) 
+REG_USR_ID          NOT NULL VARCHAR2(50)
+REG_DT              NOT NULL DATE        
+MOD_USR_ID          NOT NULL VARCHAR2(50)
+MOD_DT              NOT NULL DATE        
+POG_FRST_REG_YMD             VARCHAR2(8) 
+POGOUT_YMD                   VARCHAR2(8) 
+이름          널?       유형           
+----------- -------- -------------
+GDS_SCLS_CD NOT NULL VARCHAR2(6)  
+GDS_SCLS_NM          VARCHAR2(200)
+GDS_MCLS_CD NOT NULL VARCHAR2(4)  
+USE_YN      NOT NULL VARCHAR2(1)  
+REG_USR_ID  NOT NULL VARCHAR2(50) 
+REG_DT      NOT NULL DATE         
+MOD_USR_ID  NOT NULL VARCHAR2(50) 
+MOD_DT      NOT NULL DATE         
+이름               널?       유형           
+---------------- -------- -------------
+GDS_MCLS_CD      NOT NULL VARCHAR2(4)  
+GDS_MCLS_NM               VARCHAR2(200)
+GDS_LCLS_CD      NOT NULL VARCHAR2(2)  
+REP_MD_EMP_NO             VARCHAR2(10) 
+USE_YN           NOT NULL VARCHAR2(1)  
+REG_USR_ID       NOT NULL VARCHAR2(50) 
+REG_DT           NOT NULL DATE         
+MOD_USR_ID       NOT NULL VARCHAR2(50) 
+MOD_DT           NOT NULL DATE         
+ONLINE_MD_EMP_NO          VARCHAR2(10) 
+GLB_MD_EMP_NO             VARCHAR2(10) 
+AGG_YN                    VARCHAR2(1)  
+이름                             널?       유형           
+------------------------------ -------- -------------
+GDS_CD                         NOT NULL VARCHAR2(13) 
+GDS_NM                         NOT NULL VARCHAR2(200)
+SHRT_GDS_NM                             VARCHAR2(60) 
+GDS_SCLS_CD                    NOT NULL VARCHAR2(6)  
+BEF_GDS_SCLS_CD                NOT NULL VARCHAR2(6)  
+GDS_CLS_APPLY_YMD              NOT NULL VARCHAR2(8)  
+GDS_IMG_FILE_GRP_NO                     NUMBER(10)   
+BRND_CD                        NOT NULL VARCHAR2(6)  
+MFG_NATN_CD                             VARCHAR2(2)  
+MD_EMP_NO                               VARCHAR2(10) 
+SCM_EMP_NO                              VARCHAR2(10) 
+GDS_STAT_CD                             VARCHAR2(1)  
+BEF_GDS_STAT_CD                         VARCHAR2(1)  
+GDS_STAT_APPLY_YMD                      VARCHAR2(8)  
+PLNNG_GDS_YN                   NOT NULL VARCHAR2(1)  
+PLNNG_ORIG_GDS_CD                       VARCHAR2(13) 
+RENEW_GDS_YN                   NOT NULL VARCHAR2(1)  
+RENEW_ORIG_GDS_CD                       VARCHAR2(13) 
+GIFT_ORIG_GDS_CD                        VARCHAR2(13) 
+NEWPRD_SP_CD                            VARCHAR2(2)  
+MAN_BABY_SP_CD                          VARCHAR2(1)  
+EB_GDS_YN                      NOT NULL VARCHAR2(1)  
+SLBIZ_SAL_STTLAC_ITM_CD                 VARCHAR2(2)  
+BEF_SLBIZ_SAL_STTLAC_ITM_CD             VARCHAR2(2)  
+SLBIZ_SAL_STTLAC_ITM_APPLY_YMD          VARCHAR2(8)  
+STK_MNG_YN                     NOT NULL VARCHAR2(1)  
+BUY_TYP_CD                              VARCHAR2(2)  
+FEE_STDRD_CD                            VARCHAR2(1)  
+FEE_STDRD_AMT                           NUMBER(20)   
+GEN_FEE_RT                              NUMBER(18,6) 
+CARD_FEE_RT                             NUMBER(18,6) 
+BEF_BUY_TYP_CD                          VARCHAR2(2)  
+BEF_FEE_STDRD_CD                        VARCHAR2(1)  
+BEF_FEE_STDRD_AMT                       NUMBER(20)   
+BEF_GEN_FEE_RT                          NUMBER(18,6) 
+BEF_CARD_FEE_RT                         NUMBER(18,6) 
+BUY_TYP_APPLY_YMD                       VARCHAR2(8)  
+VAT_SP_CD                      NOT NULL VARCHAR2(1)  
+BEF_VAT_SP_CD                  NOT NULL VARCHAR2(1)  
+VAT_SP_APPLY_YMD               NOT NULL VARCHAR2(8)  
+SEL_USAG_CD_YN                 NOT NULL VARCHAR2(1)  
+SKU_MOV_PSBL_YN                NOT NULL VARCHAR2(1)  
+SUPLR_CD                                VARCHAR2(6)  
+MVNDR_YN                       NOT NULL VARCHAR2(1)  
+DSTBTR_CD                               VARCHAR2(6)  
+MVNDR_CD                                VARCHAR2(5)  
+DSTR_MFPROC_YN                 NOT NULL VARCHAR2(1)  
+POG_FRST_REG_YMD                        VARCHAR2(8)  
+POGOUT_YMD                              VARCHAR2(8)  
+GDS_REG_YMD                             VARCHAR2(8)  
+NEWPRD_ENTSTR_SBSDY_RCVNG_YN   NOT NULL VARCHAR2(1)  
+DSTR_TLMT_MNG_YN               NOT NULL VARCHAR2(1)  
+VALID_PRD_DD_NUM                        NUMBER(20)   
+INFN_SEL_IMPS_YN               NOT NULL VARCHAR2(1)  
+DC_APPLY_PSBL_YN               NOT NULL VARCHAR2(1)  
+MBL_GFTCRD_STTL_PSBL_YN        NOT NULL VARCHAR2(1)  
+EMP_DC_YN                      NOT NULL VARCHAR2(1)  
+COOP_CARD_DC_YN                NOT NULL VARCHAR2(1)  
+PNT_ACCM_YN                    NOT NULL VARCHAR2(1)  
+TSTR_OPR_SP_CD                          VARCHAR2(2)  
+TSTR_USE_PRD_DD_NUM                     NUMBER(20)   
+TSTR_OPR_CONT                           VARCHAR2(500)
+TSTR_RTN_SP_CD                          VARCHAR2(2)  
+TSTR_RTN_CONT                           VARCHAR2(500)
+MEDAP_YN                       NOT NULL VARCHAR2(1)  
+HARMGDS_YN                     NOT NULL VARCHAR2(1)  
+SEL_BAN_YN                     NOT NULL VARCHAR2(1)  
+REG_USR_ID                     NOT NULL VARCHAR2(50) 
+REG_DT                         NOT NULL DATE         
+MOD_USR_ID                     NOT NULL VARCHAR2(50) 
+MOD_DT                         NOT NULL DATE         
+ONLINE_EXCL_GDS_YN             NOT NULL VARCHAR2(1)  
+PRSNT_WTHDRW_YN                NOT NULL VARCHAR2(1)  
+POUT_TLMT_DD_NUM                        NUMBER(20)   
+CNTR_STKOUT_DD_NUM                      NUMBER(20)   
+ONYONE_CONT_YN                          VARCHAR2(1)  
+ONYONE_CONT_MNG_CD                      VARCHAR2(20) 
+O2O_YN                                  VARCHAR2(1)  
+ONLINE_EXCL_GDS_DIFF_YN                 VARCHAR2(1)  
+ONLINE_EXCL_GDS_OFF_YN                  VARCHAR2(1)  
+GDS_ENG_NM                              VARCHAR2(200)
+LBL_ENG_NM                              VARCHAR2(200)
+이름            널?       유형           
+------------- -------- -------------
+GDS_LCLS_CD   NOT NULL VARCHAR2(2)  
+GDS_LCLS_NM            VARCHAR2(200)
+REP_MD_EMP_NO          VARCHAR2(10) 
+USE_YN        NOT NULL VARCHAR2(1)  
+REG_USR_ID    NOT NULL VARCHAR2(50) 
+REG_DT        NOT NULL DATE         
+MOD_USR_ID    NOT NULL VARCHAR2(50) 
+MOD_DT        NOT NULL DATE         
+이름                           널?       유형           
+---------------------------- -------- -------------
+BRND_CD                      NOT NULL VARCHAR2(6)  
+BRND_NM                               VARCHAR2(200)
+SHRT_BRND_NM                          VARCHAR2(200)
+ONYONE_SP_CD                          VARCHAR2(1)  
+DERMO_YN                     NOT NULL VARCHAR2(1)  
+BRND_NATN_CD                          VARCHAR2(2)  
+USE_YN                       NOT NULL VARCHAR2(1)  
+REG_USR_ID                   NOT NULL VARCHAR2(50) 
+REG_DT                       NOT NULL DATE         
+MOD_USR_ID                   NOT NULL VARCHAR2(50) 
+MOD_DT                       NOT NULL DATE         
+TSTR_OPR_SP_CD                        VARCHAR2(2)  
+TSTR_RTN_SP_CD                        VARCHAR2(2)  
+CLRNCE_STND_USE_YN                    VARCHAR2(1)  
+BRND_ENG_NM                           VARCHAR2(200)
+PREM_BRND_YN                          VARCHAR2(1)  
+EB_GDS_YN                             VARCHAR2(1)  
+NEWPRD_ENTSTR_SBSDY_RCVNG_YN          VARCHAR2(1)  
+MGMT_DEPT_SP_CD                       VARCHAR2(1)  
+이름               널?       유형          
+---------------- -------- ------------
+SEQ_NO           NOT NULL NUMBER(20)  
+OPER_DT          NOT NULL VARCHAR2(8) 
+ORIGIN_BIZPL_CD  NOT NULL VARCHAR2(5) 
+POS_NO           NOT NULL VARCHAR2(4) 
+RECEIPT_NO       NOT NULL VARCHAR2(5) 
+SPRMTN_CD        NOT NULL VARCHAR2(11)
+PUBLISH_COUPN_NO NOT NULL VARCHAR2(30)
+COUPON_CD                 VARCHAR2(30)
+APPR_DT                   VARCHAR2(8) 
+APPR_NO                   VARCHAR2(20)
+APPROVAL_SP               VARCHAR2(1) 
+BIZPL_CD                  VARCHAR2(5) 
+REG_USR_ID       NOT NULL VARCHAR2(50)
+REG_DT           NOT NULL DATE        
+MOD_USR_ID       NOT NULL VARCHAR2(50)
+MOD_DT           NOT NULL DATE        
+이름             널?       유형          
+-------------- -------- ------------
+ILJA           NOT NULL CHAR(8)     
+ACCTUT         NOT NULL VARCHAR2(4) 
+POSNO          NOT NULL VARCHAR2(4) 
+GR_NO          NOT NULL VARCHAR2(5) 
+POINT_CD       NOT NULL VARCHAR2(2) 
+TASKGB         NOT NULL VARCHAR2(2) 
+CREATEILJA     NOT NULL CHAR(8)     
+ACTIVEILJA              VARCHAR2(8) 
+POINT_NM                VARCHAR2(24)
+ACCGB_CD                VARCHAR2(2) 
+ACCGB_NM                VARCHAR2(18)
+ACCPOINT                NUMBER(8)   
+ACCCHARG                NUMBER(8)   
+JSEXCCHARG              NUMBER(8)   
+ACTIVEPNT               NUMBER(8)   
+JSEXCPOINT              NUMBER(8)   
+YUHOGB                  CHAR(1)     
+YUHOILJA                NUMBER(3)   
+ZEROYJILJA              VARCHAR2(8) 
+ACTIVEYJILJA            VARCHAR2(8) 
+ACTIVE_CD               CHAR(1)     
+PRTCPNT_CD              VARCHAR2(4) 
+BRAND_CD                VARCHAR2(4) 
+GAMANG_NO      NOT NULL VARCHAR2(20)
+PRTUINQ_NO     NOT NULL VARCHAR2(50)
+HSUNGILJA               VARCHAR2(8) 
+HSUNG                   VARCHAR2(10)
+WON_PRTCPNT_NO          VARCHAR2(50)
+WON_HSUNGILJA           VARCHAR2(8) 
+WON_HSUNG               VARCHAR2(10)
+MBR_NO                  VARCHAR2(16)
+ONLINEGB                CHAR(1)     
+PREACC_YN               CHAR(1)     
+ACCOCCGB_CD             VARCHAR2(2) 
+ACCOCCGB_NM             VARCHAR2(30)
+ACCOCC_NO               VARCHAR2(20)
+JSFLAG                  CHAR(1)     
+INSYMD                  DATE        
+JSILJA                  VARCHAR2(8) 
+SVC_SP_CD               VARCHAR2(1) 
+ACC_TGT_AMT             NUMBER(12)  
+이름         널?       유형           
+---------- -------- -------------
+COMM_CL_CD NOT NULL VARCHAR2(20) 
+COMM_CD    NOT NULL VARCHAR2(20) 
+LANG_CL    NOT NULL VARCHAR2(2)  
+COMM_CD_NM          VARCHAR2(200)
+REGR_ID             VARCHAR2(20) 
+REG_DTM             DATE         
+UPDR_ID             VARCHAR2(20) 
+UPD_DTM             DATE         
+이름             널?       유형            
+-------------- -------- --------------
+COMM_CL_CD     NOT NULL VARCHAR2(20)  
+COMM_CD        NOT NULL VARCHAR2(30)  
+COMM_CD_NM              VARCHAR2(300) 
+LNUP_ORD       NOT NULL NUMBER(10)    
+DFLT_YN        NOT NULL VARCHAR2(1)   
+CHARTR_REF1             VARCHAR2(300) 
+CHARTR_REF2             VARCHAR2(300) 
+CHARTR_REF3             VARCHAR2(300) 
+CHARTR_REF4             VARCHAR2(300) 
+CHARTR_REF5             VARCHAR2(300) 
+NUM_REF1                NUMBER(15,2)  
+NUM_REF2                NUMBER(15,2)  
+NUM_REF3                NUMBER(15,2)  
+NUM_REF4                NUMBER(15,2)  
+NUM_REF5                NUMBER(15,2)  
+UP_COMM_CD              VARCHAR2(20)  
+RMK                     VARCHAR2(4000)
+USE_YN         NOT NULL VARCHAR2(1)   
+EAI_TRANMSN_CD          VARCHAR2(1)   
+EAI_HANDL_TIME          DATE          
+EAI_HANDL_RSLT          VARCHAR2(4000)
+REGR_ID        NOT NULL VARCHAR2(20)  
+REG_DTM        NOT NULL DATE          
+UPDR_ID        NOT NULL VARCHAR2(20)  
+UPD_DTM        NOT NULL DATE          
+LANG_CL                 VARCHAR2(2)   
+CD_LVL                  NUMBER(5)     
+CHARTR_REF6             VARCHAR2(300) 
+CHARTR_REF7             VARCHAR2(300) 
+CHARTR_REF8             VARCHAR2(300) 
+CHARTR_REF9             VARCHAR2(300) 
+CHARTR_REF10            VARCHAR2(300) 
+CHARTR_REF11            VARCHAR2(300) 
+CHARTR_REF12            VARCHAR2(300) 
+CHARTR_REF13            VARCHAR2(300) 
+CHARTR_REF14            VARCHAR2(300) 
+CHARTR_REF15            VARCHAR2(300) 
+이름         널?       유형           
+---------- -------- -------------
+COMM_CL_CD NOT NULL VARCHAR2(20) 
+COMM_CD_NM          VARCHAR2(200)
+LANG_CL    NOT NULL VARCHAR2(2)  
+REGR_ID             VARCHAR2(20) 
+REG_DTM             DATE         
+UPDR_ID             VARCHAR2(20) 
+UPD_DTM             DATE         
+이름                 널?       유형            
+------------------ -------- --------------
+COMM_CL_CD         NOT NULL VARCHAR2(20)  
+COMM_CL_CD_NM               VARCHAR2(300) 
+COMM_CL_CD_DETL_NM          VARCHAR2(200) 
+UP_COMM_CL_CD               VARCHAR2(20)  
+CD_LVL                      NUMBER(5)     
+OWNER_SYS_FG_CD             VARCHAR2(20)  
+USE_SYS_FG_CD               VARCHAR2(20)  
+RMK                         VARCHAR2(4000)
+USE_YN             NOT NULL VARCHAR2(1)   
+REGR_ID            NOT NULL VARCHAR2(20)  
+REG_DTM            NOT NULL DATE          
+UPDR_ID            NOT NULL VARCHAR2(20)  
+UPD_DTM            NOT NULL DATE
+"""
+
 import re
 
 
-def process_input():
-    left_input = left_text.get("1.0", tk.END).strip()
-    right_input = right_text.get("1.0", tk.END).strip()
+def parse_and_format(text):
+    lines = text.split('\n')
+    result = []
+    for line in lines:
+        if not any(x in line for x in ["이름", "널 ?", "유형", "-"]):
+            line = line.replace("NOT NULL", "")
+            parts = line.split()
+            if len(parts) >= 2:
+                word = parts[1]
+                number = 0
+                if word == 'DATE':
+                    number = '7'  # Default value for strings without parentheses
+                elif word == 'CLOB':
+                    number = '4000'  # Default value for strings without parentheses
+                else:
+                    match = re.search(r'\(([\d,]+)\)', word)
+                    if match:
+                        number = match.group(1)  # Extract the content inside parentheses
+                        word = word.split('(')[0]
+                result.append(f"{word} {number}")
+    return '\n'.join(result)
 
-    # 빈 줄 제거
-    right_lines = [line for line in right_input.split('\n') if line.strip()]
-
-    results = []
-    current_table = ""
-    column_number = 1
-
-    left_lines = left_input.split('\n')
-    print(left_lines)
-
-    for line in right_lines:
-        if "이름" in line or "----" in line:
-            if current_table:
-                column_number = 1
-            continue
-
-        if any(table in line for table in left_lines):
-            current_table = line.split()[1]
-            continue
-
-        parts = line.split()
-        if len(parts) >= 3:
-            column_name = parts[0]
-            data_type = parts[-1]
-            length = ""
-
-            if "VARCHAR2" in data_type or "NUMBER" in data_type:
-                match = re.search(r'\((\d+(?:,\d+)?)\)', data_type)
-                if match:
-                    length = match.group(1)
-                    data_type = data_type.split('(')[0]
-            elif "DATE" in data_type:
-                length = "7"
-
-            results.append(f"{current_table}\t{column_name}\t{column_number}\t{data_type}\t{length}")
-            print(current_table)
-            column_number += 1
-
-    output_text.delete("1.0", tk.END)
-    output_text.insert(tk.END, "\n".join(results))
+if __name__ == "__main__":
+    new_line = parse_and_format(input_text)
+    print(new_line)
 
 
-# GUI 설정
-root = tk.Tk()
-root.title("테이블 구조 분석기")
-
-frame = ttk.Frame(root, padding="10")
-frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-
-# 왼쪽 입력 박스 (DESC 테이블 목록)
-left_label = ttk.Label(frame, text="DESC 테이블 목록:")
-left_label.grid(row=0, column=0, sticky=tk.W, pady=5)
-left_text = tk.Text(frame, width=30, height=20)
-left_text.grid(row=1, column=0, pady=5)
-
-# 오른쪽 입력 박스 (DESC 스크립트 실행 결과)
-right_label = ttk.Label(frame, text="DESC 스크립트 실행 결과:")
-right_label.grid(row=0, column=1, sticky=tk.W, pady=5)
-right_text = tk.Text(frame, width=50, height=20)
-right_text.grid(row=1, column=1, pady=5)
-
-# 처리 버튼
-process_button = ttk.Button(frame, text="분석", command=process_input)
-process_button.grid(row=2, column=0, columnspan=2, pady=10)
-
-# 출력 박스
-output_label = ttk.Label(frame, text="분석 결과:")
-output_label.grid(row=3, column=0, columnspan=2, sticky=tk.W, pady=5)
-output_text = tk.Text(frame, width=100, height=30, wrap="none")
-output_text.grid(row=4, column=0, columnspan=2, pady=5)
-
-# 스크롤바 추가
-output_scroll = ttk.Scrollbar(frame, orient="vertical", command=output_text.yview)
-output_text.configure(yscrollcommand=output_scroll.set)
-output_scroll.grid(row=4, column=2, sticky="ns")
-
-# 창 크기 조절 가능하도록 설정
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-frame.columnconfigure(1, weight=1)
-frame.rowconfigure(4, weight=1)
-
-root.mainloop()
